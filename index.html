@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curly Hairstyle Generator</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            margin: auto;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            background-color: #6a5acd;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #5a4abd;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Curly Hairstyle Generator</h1>
+
+    <div class="container">
+        <p>Click the button to generate a curly hairstyle idea!</p>
+        <button onclick="generateHairstyle()">Generate Hairstyle</button>
+        <div class="result" id="hairstyleResult"></div>
+    </div>
+
+    <script>
+        const hairstyles = [
+            "Curly High Puff",
+            "Half-Up Half-Down Curls",
+            "Curly Space Buns",
+            "Side-Part Natural Curls",
+            "Curly Bob Cut",
+            "Long Layered Curls",
+            "Curly Ponytail with Volume",
+            "Curly Bangs with Shoulder-Length Hair",
+            "Curly Shag Cut",
+            "Defined Wash-and-Go Curls",
+            "Curly Braided Crown",
+            "Curly Afro Style"
+        ];
+
+        function generateHairstyle() {
+            const randomIndex = Math.floor(Math.random() * hairstyles.length);
+            document.getElementById("hairstyleResult").textContent = hairstyles[randomIndex];
+        }
+    </script>
+
+</body>
+</html>
