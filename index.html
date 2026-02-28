@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Curly Hairstyle Generator</title>
+    <title>Hairstyle Generator</title>
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f3f3f3;
             text-align: center;
             padding: 40px;
         }
@@ -17,21 +17,24 @@
         .container {
             background: white;
             padding: 30px;
-            border-radius: 10px;
-            width: 400px;
+            border-radius: 15px;
+            width: 450px;
             margin: auto;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+        }
+
+        select, button {
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 16px;
+            border-radius: 6px;
         }
 
         button {
             background-color: #6a5acd;
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 5px;
             cursor: pointer;
-            margin-top: 20px;
         }
 
         button:hover {
@@ -42,39 +45,70 @@
             margin-top: 20px;
             font-size: 18px;
             font-weight: bold;
-            color: #444;
+        }
+
+        img {
+            margin-top: 20px;
+            width: 100%;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Curly Hairstyle Generator</h1>
+    <h1>Hairstyle Generator</h1>
 
     <div class="container">
-        <p>Click the button to generate a curly hairstyle idea!</p>
+        <p>Select your hair type:</p>
+
+        <select id="hairType">
+            <option value="curly">Curly</option>
+            <option value="straight">Straight</option>
+            <option value="wavy">Wavy</option>
+            <option value="coily">Coily</option>
+        </select>
+
+        <br>
+
         <button onclick="generateHairstyle()">Generate Hairstyle</button>
+
         <div class="result" id="hairstyleResult"></div>
+        <img id="hairstyleImage" src="" alt="">
     </div>
 
     <script>
-        const hairstyles = [
-            "Curly High Puff",
-            "Half-Up Half-Down Curls",
-            "Curly Space Buns",
-            "Side-Part Natural Curls",
-            "Curly Bob Cut",
-            "Long Layered Curls",
-            "Curly Ponytail with Volume",
-            "Curly Bangs with Shoulder-Length Hair",
-            "Curly Shag Cut",
-            "Defined Wash-and-Go Curls",
-            "Curly Braided Crown",
-            "Curly Afro Style"
-        ];
+        const hairstyles = {
+            curly: [
+                {name: "Curly High Puff", img: "https://source.unsplash.com/400x400/?curly-hair-woman"},
+                {name: "Curly Bob", img: "https://source.unsplash.com/400x400/?curly-bob"},
+                {name: "Curly Ponytail", img: "https://source.unsplash.com/400x400/?curly-ponytail"}
+            ],
+            straight: [
+                {name: "Sleek Long Hair", img: "https://source.unsplash.com/400x400/?straight-hair-woman"},
+                {name: "Blunt Cut", img: "https://source.unsplash.com/400x400/?blunt-haircut"},
+                {name: "Straight High Ponytail", img: "https://source.unsplash.com/400x400/?straight-ponytail"}
+            ],
+            wavy: [
+                {name: "Beach Waves", img: "https://source.unsplash.com/400x400/?wavy-hair-woman"},
+                {name: "Layered Waves", img: "https://source.unsplash.com/400x400/?layered-wavy-hair"},
+                {name: "Wavy Lob", img: "https://source.unsplash.com/400x400/?wavy-lob"}
+            ],
+            coily: [
+                {name: "Coily Afro", img: "https://source.unsplash.com/400x400/?afro-hairstyle"},
+                {name: "Coily Twist Out", img: "https://source.unsplash.com/400x400/?twist-out-hair"},
+                {name: "Coily Braided Style", img: "https://source.unsplash.com/400x400/?braided-natural-hair"}
+            ]
+        };
 
         function generateHairstyle() {
-            const randomIndex = Math.floor(Math.random() * hairstyles.length);
-            document.getElementById("hairstyleResult").textContent = hairstyles[randomIndex];
+            const type = document.getElementById("hairType").value;
+            const options = hairstyles[type];
+
+            const randomIndex = Math.floor(Math.random() * options.length);
+            const chosen = options[randomIndex];
+
+            document.getElementById("hairstyleResult").textContent = chosen.name;
+            document.getElementById("hairstyleImage").src = chosen.img;
         }
     </script>
 
