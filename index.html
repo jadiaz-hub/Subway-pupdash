@@ -1,116 +1,261 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hairstyle Generator</title>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f3f3f3;
-            text-align: center;
-            padding: 40px;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 450px;
-            margin: auto;
-            box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
-        }
-
-        select, button {
-            padding: 10px;
-            margin-top: 15px;
-            font-size: 16px;
-            border-radius: 6px;
-        }
-
-        button {
-            background-color: #6a5acd;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #5a4abd;
-        }
-
-        .result {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        img {
-            margin-top: 20px;
-            width: 100%;
-            border-radius: 10px;
-        }
-    </style>
+<title>Subway Pup Dash 🐶</title>
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#87CEEB;
+}
+canvas{
+    display:block;
+    margin:0 auto;
+    background:#cfd8dc;
+}
+#menu, #gameOverScreen{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    color:white;
+}
+button{
+    padding:10px 20px;
+    font-size:16px;
+    margin:5px;
+    cursor:pointer;
+}
+#ui{
+    position:absolute;
+    top:10px;
+    left:10px;
+    color:white;
+    font-weight:bold;
+}
+.hidden{display:none;}
+</style>
 </head>
 <body>
 
-    <h1>Hairstyle Generator</h1>
+<div id="menu">
+<h1>🐶 Subway Pup Dash</h1>
+<p>Select Your Dog</p>
+<button onclick="selectDog('brown')">Brown Pup</button>
+<button onclick="selectDog('white')">White Pup (5 coins)</button>
+<button onclick="startGame()">Start Game</button>
+</div>
 
-    <div class="container">
-        <p>Select your hair type:</p>
+<div id="ui" class="hidden">
+Score: <span id="score">0</span> |
+Coins: <span id="coins">0</span> |
+Level: <span id="level">1</span> |
+Combo: <span id="combo">1x</span>
+</div>
 
-        <select id="hairType">
-            <option value="curly">Curly</option>
-            <option value="straight">Straight</option>
-            <option value="wavy">Wavy</option>
-            <option value="coily">Coily</option>
-        </select>
+<div id="gameOverScreen" class="hidden">
+<h1>Game Over</h1>
+<p id="finalScore"></p>
+<button onclick="restartGame()">Restart</button>
+</div>
 
-        <br>
+<canvas id="game" width="900" height="400"></canvas>
 
-        <button onclick="generateHairstyle()">Generate Hairstyle</button>
+<script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
 
-        <div class="result" id="hairstyleResult"></div>
-        <img id="hairstyleImage" src="" alt="">
-    </div>
+let dog;
+let obstacles=[];
+let collectibles=[];
+let score=0;
+let coins=0;
+let level=1;
+let speed=5;
+let combo=1;
+let gameRunning=false;
+let gameOver=false;
+let frame=0;
+let day=true;
 
-    <script>
-        const hairstyles = {
-            curly: [
-                {name: "Curly High Puff", img: "https://source.unsplash.com/400x400/?curly-hair-woman"},
-                {name: "Curly Bob", img: "https://source.unsplash.com/400x400/?curly-bob"},
-                {name: "Curly Ponytail", img: "https://source.unsplash.com/400x400/?curly-ponytail"}
-            ],
-            straight: [
-                {name: "Sleek Long Hair", img: "https://source.unsplash.com/400x400/?straight-hair-woman"},
-                {name: "Blunt Cut", img: "https://source.unsplash.com/400x400/?blunt-haircut"},
-                {name: "Straight High Ponytail", img: "https://source.unsplash.com/400x400/?straight-ponytail"}
-            ],
-            wavy: [
-                {name: "Beach Waves", img: "https://source.unsplash.com/400x400/?wavy-hair-woman"},
-                {name: "Layered Waves", img: "https://source.unsplash.com/400x400/?layered-wavy-hair"},
-                {name: "Wavy Lob", img: "https://source.unsplash.com/400x400/?wavy-lob"}
-            ],
-            coily: [
-                {name: "Coily Afro", img: "https://source.unsplash.com/400x400/?afro-hairstyle"},
-                {name: "Coily Twist Out", img: "https://source.unsplash.com/400x400/?twist-out-hair"},
-                {name: "Coily Braided Style", img: "https://source.unsplash.com/400x400/?braided-natural-hair"}
-            ]
-        };
+function selectDog(color){
+    dogColor=color;
+}
 
-        function generateHairstyle() {
-            const type = document.getElementById("hairType").value;
-            const options = hairstyles[type];
+function startGame(){
+    document.getElementById("menu").classList.add("hidden");
+    document.getElementById("ui").classList.remove("hidden");
+    initGame();
+}
 
-            const randomIndex = Math.floor(Math.random() * options.length);
-            const chosen = options[randomIndex];
+function initGame(){
+dog={
+    x:100,y:300,width:40,height:40,
+    dy:0,gravity:0.6,jump:-12,grounded:true,
+    color:dogColor||"brown",
+    invincible:false,
+    boost:false,
+    glide:false,
+    tailFrame:0
+};
+score=0;
+speed=5;
+level=1;
+combo=1;
+gameRunning=true;
+update();
+}
 
-            document.getElementById("hairstyleResult").textContent = chosen.name;
-            document.getElementById("hairstyleImage").src = chosen.img;
+function spawnObstacle(){
+    obstacles.push({
+        x:900,
+        y:310,
+        width:30,
+        height:30
+    });
+}
+
+function spawnCollectible(){
+    const types=["coin","bone","treat","board"];
+    let type=types[Math.floor(Math.random()*types.length)];
+    collectibles.push({
+        x:900,
+        y:250,
+        type:type
+    });
+}
+
+function drawDog(){
+    ctx.fillStyle=dog.invincible?"yellow":dog.color;
+    ctx.fillRect(dog.x,dog.y,dog.width,dog.height);
+
+    ctx.fillStyle="black";
+    ctx.fillRect(dog.x+35,dog.y+10,10,5); // tail wag
+}
+
+function update(){
+if(!gameRunning||gameOver)return;
+
+ctx.clearRect(0,0,900,400);
+
+frame++;
+
+if(frame%120===0)spawnObstacle();
+if(frame%200===0)spawnCollectible();
+
+dog.dy+=dog.gravity;
+dog.y+=dog.dy;
+
+if(dog.y>=300){
+    dog.y=300;
+    dog.dy=0;
+    dog.grounded=true;
+}
+
+obstacles.forEach((o,i)=>{
+    o.x-=speed;
+    ctx.fillStyle="red";
+    ctx.fillRect(o.x,o.y,o.width,o.height);
+
+    if(dog.x<o.x+30 && dog.x+40>o.x && dog.y<o.y+30 && dog.y+40>o.y){
+        if(!dog.invincible){
+            endGame();
         }
-    </script>
+    }
+});
 
+collectibles.forEach((c,i)=>{
+    c.x-=speed;
+
+    if(c.type==="coin"){
+        ctx.fillStyle="gold";
+        ctx.beginPath();
+        ctx.arc(c.x,c.y,10,0,Math.PI*2);
+        ctx.fill();
+    }
+
+    if(c.type==="bone"){
+        ctx.fillStyle="white";
+        ctx.fillRect(c.x,c.y,20,10);
+    }
+
+    if(c.type==="treat"){
+        ctx.fillStyle="pink";
+        ctx.fillRect(c.x,c.y,15,15);
+    }
+
+    if(c.type==="board"){
+        ctx.fillStyle="cyan";
+        ctx.fillRect(c.x,c.y,25,8);
+    }
+
+    if(dog.x<c.x+20 && dog.x+40>c.x && dog.y<c.y+20 && dog.y+40>c.y){
+        if(c.type==="coin"){coins++;}
+        if(c.type==="bone"){dog.invincible=true;setTimeout(()=>dog.invincible=false,3000);}
+        if(c.type==="treat"){speed+=3;setTimeout(()=>speed-=3,3000);}
+        if(c.type==="board"){dog.glide=true;setTimeout(()=>dog.glide=false,3000);}
+        collectibles.splice(i,1);
+    }
+});
+
+drawDog();
+
+score+=0.1*combo;
+document.getElementById("score").innerText=Math.floor(score);
+document.getElementById("coins").innerText=coins;
+document.getElementById("combo").innerText=combo+"x";
+
+speed+=0.0005;
+
+if(score>500 && level===1){
+    level=2;
+    canvas.style.background="#555";
+}
+if(score>1000 && level===2){
+    level=3;
+    canvas.style.background="#222";
+}
+document.getElementById("level").innerText=level;
+
+if(score%300<1)combo++;
+
+if(score%800<1)day=!day;
+document.body.style.background=day?"#87CEEB":"#111";
+
+requestAnimationFrame(update);
+}
+
+function endGame(){
+gameOver=true;
+gameRunning=false;
+document.getElementById("gameOverScreen").classList.remove("hidden");
+document.getElementById("finalScore").innerText="Score: "+Math.floor(score);
+}
+
+function restartGame(){
+document.getElementById("gameOverScreen").classList.add("hidden");
+obstacles=[];
+collectibles=[];
+gameOver=false;
+gameRunning=true;
+initGame();
+}
+
+document.addEventListener("keydown",e=>{
+if(e.code==="Space"||e.code==="ArrowUp"){
+    if(dog.grounded){
+        dog.dy=dog.jump;
+        dog.grounded=false;
+    }
+}
+if(e.code==="KeyP"){
+    gameRunning=!gameRunning;
+    if(gameRunning)update();
+}
+});
+
+</script>
 </body>
 </html>
