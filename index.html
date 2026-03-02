@@ -1,145 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Flappy Bird Clone</title>
-<style>
-body{
-    margin:0;
-    overflow:hidden;
-    background:#70c5ce;
-}
-canvas{
-    display:block;
-    margin:0 auto;
-    background:#70c5ce;
-}
-#gameOver{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    text-align:center;
-    display:none;
-    font-family:Arial;
-}
-button{
-    padding:10px 20px;
-    font-size:16px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake.io Clone</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div id="gameOver">
-<h1>Game Over</h1>
-<button onclick="restart()">Restart</button>
-</div>
+  <div id="ui">
+    <h1>Snake.io Clone</h1>
+    <div id="score">Score: 0</div>
+  </div>
 
-<canvas id="game" width="400" height="600"></canvas>
+  <canvas id="gameCanvas"></canvas>
 
-<script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-
-let bird = {
-    x:80,
-    y:300,
-    width:20,
-    height:20,
-    gravity:0.6,
-    lift:-10,
-    velocity:0
-};
-
-let pipes=[];
-let score=0;
-let gameOver=false;
-
-function spawnPipe(){
-    let gap=150;
-    let topHeight=Math.random()*300+50;
-    pipes.push({
-        x:400,
-        top:topHeight,
-        bottom:topHeight+gap
-    });
-}
-
-function drawBird(){
-    ctx.fillStyle="yellow";
-    ctx.fillRect(bird.x,bird.y,bird.width,bird.height);
-}
-
-function update(){
-if(gameOver) return;
-
-ctx.clearRect(0,0,400,600);
-
-bird.velocity+=bird.gravity;
-bird.y+=bird.velocity;
-
-if(bird.y>600||bird.y<0){
-    endGame();
-}
-
-if(Math.random()<0.02){
-    spawnPipe();
-}
-
-pipes.forEach((pipe,i)=>{
-    pipe.x-=3;
-
-    ctx.fillStyle="green";
-    ctx.fillRect(pipe.x,0,50,pipe.top);
-    ctx.fillRect(pipe.x,pipe.bottom,50,600-pipe.bottom);
-
-    if(pipe.x+50<0) pipes.splice(i,1);
-
-    if(
-        bird.x+bird.width>pipe.x &&
-        bird.x<pipe.x+50 &&
-        (bird.y<pipe.top || bird.y+bird.height>pipe.bottom)
-    ){
-        endGame();
-    }
-
-    if(pipe.x===bird.x){
-        score++;
-    }
-});
-
-drawBird();
-
-ctx.fillStyle="white";
-ctx.font="20px Arial";
-ctx.fillText("Score: "+score,10,30);
-
-requestAnimationFrame(update);
-}
-
-function endGame(){
-gameOver=true;
-document.getElementById("gameOver").style.display="block";
-}
-
-function restart(){
-pipes=[];
-score=0;
-bird.y=300;
-bird.velocity=0;
-gameOver=false;
-document.getElementById("gameOver").style.display="none";
-update();
-}
-
-document.addEventListener("keydown",e=>{
-if(e.code==="Space"){
-    bird.velocity=bird.lift;
-}
-});
-
-update();
-</script>
-
+  <script src="game.js"></script>
 </body>
 </html>
